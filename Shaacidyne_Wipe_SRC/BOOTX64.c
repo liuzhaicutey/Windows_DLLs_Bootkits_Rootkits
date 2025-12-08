@@ -123,3 +123,5 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
 
     return EFI_SUCCESS;
 }
+
+// Instructions: Compile via MSYS2 using EDK 2/GNU-EFI and GCC Compiler
