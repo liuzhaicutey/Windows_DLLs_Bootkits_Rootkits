@@ -1,3 +1,1 @@
-If injected to a process via LoadLibraryA injection, it watches for a target process (Default is Notepad.exe, edit it upon compiling), then it kills it and display an error message. 
-
-It can be used for software restrictions/parental controls
+If injected to a process via LoadLibraryA injection, it gets a baseline list of processes upon start up, then proceeds to an enforcing logic where it kills any processes that are not found in the baseline list, stopping new processes from being created/opened.
