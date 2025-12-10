@@ -1,92 +1,78 @@
+#include "pch.h"
 #include <windows.h>
 #include <tlhelp32.h>
-#include <set>
 #include <string>
-#include <fstream>
 
-#define LOG_PATH L"C:\\procmon_log.txt" # debugger
-
-void Log(const std::wstring& msg)
-{
-    std::wofstream f(LOG_PATH, std::ios::app);
-    f << msg << std::endl;
+void ShowPermissionError() {
+    MessageBox(NULL, L"You don't have enough permission to run this process.", L"Permission Denied", MB_OK | MB_ICONERROR);
 }
 
-std::set<DWORD> GetPIDs()
-{
-    std::set<DWORD> out;
+BOOL IsProcessRunning(const wchar_t* processName) {
+    PROCESSENTRY32 processEntry;
+    processEntry.dwSize = sizeof(PROCESSENTRY32);
 
-    PROCESSENTRY32 pe;
-    pe.dwSize = sizeof(pe);
-
-    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (snap == INVALID_HANDLE_VALUE)
-        return out;
-
-    if (Process32First(snap, &pe))
-    {
-        do {
-            out.insert(pe.th32ProcessID);
-        } while (Process32Next(snap, &pe));
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snapshot == INVALID_HANDLE_VALUE) {
+        return FALSE;
     }
 
-    CloseHandle(snap);
-    return out;
+    BOOL found = Process32First(snapshot, &processEntry);
+    while (found) {
+        if (_wcsicmp(processEntry.szExeFile, processName) == 0) {
+            CloseHandle(snapshot);
+            return TRUE;
+        }
+        found = Process32Next(snapshot, &processEntry);
+    }
+
+    CloseHandle(snapshot);
+    return FALSE;
 }
 
-void KillProcess(DWORD pid)
-{
-    if (pid == GetCurrentProcessId())
-        return; 
+void TerminateProcessByName(const wchar_t* processName) {
+    PROCESSENTRY32 processEntry;
+    processEntry.dwSize = sizeof(PROCESSENTRY32);
 
-    HANDLE h = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
-    if (!h)
-    {
-        Log(L"OpenProcess failed for PID " + std::to_wstring(pid));
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snapshot == INVALID_HANDLE_VALUE) {
         return;
     }
 
-    if (TerminateProcess(h, 0))
-        Log(L"KILLED PID " + std::to_wstring(pid));
-    else
-        Log(L"Terminate FAILED PID " + std::to_wstring(pid));
-
-    CloseHandle(h);
-}
-
-DWORD WINAPI MonitorThread(LPVOID)
-{
-    Log(L"Monitor thread started");
-
-    std::set<DWORD> known = GetPIDs();
-
-    while (true)
-    {
-        auto now = GetPIDs();
-
-        for (DWORD pid : now)
-        {
-            if (!known.count(pid))
-            {
-                Log(L"New PID detected: " + std::to_wstring(pid));
-                KillProcess(pid);
+    BOOL found = Process32First(snapshot, &processEntry);
+    while (found) {
+        if (_wcsicmp(processEntry.szExeFile, processName) == 0) {
+            HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, processEntry.th32ProcessID);
+            if (hProcess != NULL) {
+                TerminateProcess(hProcess, 0);
+                CloseHandle(hProcess);
             }
         }
+        found = Process32Next(snapshot, &processEntry);
+    }
 
-        known = std::move(now);
+    CloseHandle(snapshot);
+}
 
-        Sleep(100); 
+DWORD WINAPI MonitorProcess(LPVOID lpParam) {
+    while (TRUE) {
+        if (IsProcessRunning(L"Notepad.exe")) {
+            TerminateProcessByName(L"Notepad.exe");
+            ShowPermissionError();
+        }
+        Sleep(1000);
     }
     return 0;
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID)
-{
-    if (reason == DLL_PROCESS_ATTACH)
-    {
-        DisableThreadLibraryCalls(hModule);
-
-        CreateThread(nullptr, 0, MonitorThread, nullptr, 0, nullptr);
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
+    switch (ul_reason_for_call) {
+    case DLL_PROCESS_ATTACH:
+        CreateThread(NULL, 0, MonitorProcess, NULL, 0, NULL);
+        break;
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
+    case DLL_PROCESS_DETACH:
+        break;
     }
     return TRUE;
 }
