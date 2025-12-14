@@ -38,8 +38,7 @@ The code follows four key stages to load and execute a PE file in memory:
 
 ## DISCLAIMER
 
-The techniques outlined in this repository can be useful for educational purposes, reverse engineering, and legitimate software development. However, **misuse of these techniques for malicious purposes**, such as unauthorized code injection, tampering with system processes, or evading security mechanisms, is illegal and unethical. Always ensure that you have the proper permissions and comply with local laws and regulations when using this code.
-
+Misuse or improper implementation of these functions can lead to system instability, crashes, or unpredictable behavior. Use at your own risk. 
 The author is not responsible for any damage, data loss, or legal consequences arising from the use or misuse of this material.
 
 ---
