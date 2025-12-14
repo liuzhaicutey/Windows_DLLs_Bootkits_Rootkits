@@ -1,2 +1,0 @@
-# GUYS #
-A lot of people from my TikTok (possibly from YT too) are dm'ing me for hacking services. But I just want to be transparent here. I am just merely a beginner software developer who just graduated recently, and had a knack for red-teaming tools and stuff. Some of these codes are made by me during my days in college, and I am editing and reuploading them. So no, I am not and WILL NOT do any kinds of services like that.
