@@ -29,7 +29,7 @@ The code follows four key stages to load and execute a PE file in memory:
 
 ## How to use
 **On VS**
-- **Add paylod to your project**: Right-click the project and add resource. Import your DLL/EXE and set its type to `RCDATA`
+- **Add payload to your project**: Right-click the project and add resource. Import your DLL/EXE and set its type to `RCDATA`
 - **Set ID**: Set resource ID to 101 on the Resource View window
 - **EXAMPLE**:
 - Resource Files
