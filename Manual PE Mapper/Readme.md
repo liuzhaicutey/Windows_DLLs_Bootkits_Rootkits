@@ -1,6 +1,6 @@
 # Manual PE Mapper
 
-A **custom in-memory PE file loader**, this utility is designed to map a **PE (Portable Executable)** file into memory, modify the necessary data structures, and prepare it for execution. This technique is commonly used in scenarios such as **reflective DLL injection**, **packing and unpacking executables**, **obfuscation**, and **custom anti-debugging** mechanisms. You can use it to directly load a PE file into your application or inject it into a target process.
+A **custom in-memory PE file loader**, this utility is designed to map a **PE/DLL** file into memory, modify the necessary data structures, and prepare it for execution. This technique is commonly used in scenarios such as **reflective DLL injection**, **packing and unpacking executables**, **obfuscation**, and **custom anti-debugging** mechanisms. You can use it to directly load a PE file into your application or inject it into a target process.
 
 ---
 
