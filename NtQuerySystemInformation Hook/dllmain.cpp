@@ -13,7 +13,6 @@
 std::vector<std::string> procNames = {
     "Notepad.exe",
     "cmd.exe"
-
 };
 
 typedef NTSTATUS(WINAPI* PNT_QUERY_SYSTEM_INFORMATION)(
@@ -112,6 +111,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
         CloseHandle(CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)main, hModule, 0, nullptr));
+        break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
@@ -119,3 +119,4 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     }
     return TRUE;
 }
+ 
